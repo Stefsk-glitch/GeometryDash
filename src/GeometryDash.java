@@ -39,6 +39,8 @@ public class GeometryDash extends Application
     private float rotate;
     private Boolean rememberRotate;
     private float lastRotate = 0;
+    private Rectangle2D playerHitbox;
+    private Rectangle2D spikeHitbox;
 
     @Override
     public void start(Stage stage)
@@ -105,6 +107,9 @@ public class GeometryDash extends Application
         numbers = getSubImages("numbers.png", 0, 0, 15, 24);
 
         rememberRotate = false;
+
+        playerHitbox = new Rectangle2D.Double(playerX, playerY, Constants.playerWidth, Constants.playerHeight);
+        spikeHitbox = new Rectangle2D.Double(obstacleX, spikeY, Constants.obstacleWidth, Constants.obstacleHeight);
     }
 
     public void draw(FXGraphics2D graphics2D)
@@ -142,6 +147,17 @@ public class GeometryDash extends Application
     {
         if (!isGameOver)
         {
+            setPlayerAffineTransform(playerX, playerY + playerVelocityY, rotate);
+            playerHitbox.setRect(playerX, playerY + playerVelocityY, Constants.playerWidth, Constants.playerHeight);
+
+            obstacleX += Constants.OBSTACLE_VELOCITY_X;
+            setSpikeAffineTransform(obstacleX, spikeY);
+            spikeHitbox.setRect(obstacleX, spikeY, Constants.obstacleWidth, Constants.obstacleHeight);
+
+            if (playerHitbox.intersects(spikeHitbox)) {
+                isGameOver = true;
+            }
+
             playerVelocityY += Constants.gravity;
 
             if (isJumping)
